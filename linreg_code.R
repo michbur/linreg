@@ -1,8 +1,3 @@
-library(qpcR)
-linreg(fluo = reps[, 2])
-
-early implementation of linreg, still not done
-
 linreg <- function(cyc = 1L:length(fluo), fluo, max.it = 100) {
   
   if(abs(max(fluo)/min(fluo)) < 7)
