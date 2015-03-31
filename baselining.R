@@ -1,4 +1,5 @@
-y <- reps[, 2]
+# Part 0 ------------------------------------
+y <- reps[, 3]
 # 'Set baseline to minimum observation'
 bl <- min(y)
 #Q1 Does apply baseline mean substract baseline? 
@@ -8,9 +9,51 @@ ybl <- y - bl
 # increase in fluorescence values is observed.'
 #Q2 After baselining minimum value is 0. We need to 
 #compare highest value and second lowest value
-if(max(ybl)/min(ybl[ybl != 0]) > 7) {
+#if(max(ybl)/min(ybl[ybl != 0]) > 7) {
+# Part I ------------------------------------
+#slope lower and upper
+slu <- get_exponential_phase(ybl)
+
+while(slu["upper"] < slu["lower"]) {
+  # 'decrease baseline by 1%'
+  #Q5 what to do if baseline is negative? should I substract 0.01 from the
+  #baseline or calculate 0.99 of already negative baseline? Substracting seems
+  #not valid, because starting baseline is equal to the minimum observation
+  #and substracting woul cause a baseline error.
+  bl <- bl * 0.99
+  ybl <- y - bl
+  slu <- get_exponential_phase(ybl)
+}
+
+#when while loop ends, we know that slu["upper"] > slu["lower"]
+stp <- 0.005 * bl
+
+# Part II ------------------------------------
+#Q6 What if step is negative?
+bl <- bl + stp
+ybl <- y - bl
+
+while(abs(slu["upper"] - slu["lower"]) > 1e-5) {
+#for(sth in 1L:100) {
+  if(slu["upper"] < slu["lower"]) {
+    #Q7 what means - 2.step
+    bl <- bl - 2*stp
+    stp <- stp/2
+    slu <- get_exponential_phase(y - bl)
+    print("A")
+  } else {
+    bl <- bl + stp
+    slu <- exponential_slopes(y - bl)
+  }
+  print(abs(slu["upper"] - slu["lower"]))
+}
+
+
+
+
+exponential_slopes <- function(y) {
   # 'Determine SDM cycle'
-  ders <- summary(inder(1L:length(ybl), ybl, smooth.method = NULL), 
+  ders <- summary(inder(1L:length(y), y, smooth.method = NULL), 
                   print = FALSE)
   # 'For each sample that shows amplification, an iterative 
   # algorithm than repeatedly adjusts the baseline value until 
@@ -25,24 +68,8 @@ if(max(ybl)/min(ybl[ybl != 0]) > 7) {
   
   # 'Compare S_upper and S_lower'
   #Q4 Does regressions involve also SDM cycle?
-  
-  #
-  id_lower <- exp_start:SDM
-  s_lower <- coef(lm(ybl[id_lower] ~ id_lower))[2]
-  
+  id_lower <- exp_start:(SDM - 1)
   id_upper <- SDM:exp_end
-  s_upper <- coef(lm(ybl[id_upper] ~ id_upper))[2]
-  
-  if(s_upper < s_lower) {
-    # 'decrease baseline by 1%'
-    #Q5 what to do if baseline is negative? should I substract 0.01 from the
-    #baseline or calculate 0.99 of already negative baseline? Substracting seems
-    #not valid, because starting baseline is equal to the minimum observation
-    #and substracting woul cause a baseline error.
-    bl <- bl * 0.99
-    ybl <- y - bl
-  } else {
-    step <- 0.005 * bl
-  }
-    
+  c(lower = as.vector(coef(lm(y[id_lower] ~ id_lower))[2]), 
+    upper = as.vector(coef(lm(y[id_upper] ~ id_upper))[2]))
 }
