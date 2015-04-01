@@ -13,7 +13,7 @@
 #' library(qpcR)
 #' exp_slopes(reps[, 2])
 
-exp_slopes <- function(y) {
+exp_slopes <- function(y, fluo_log = FALSE) {
   # 'Determine SDM cycle'
   ders <- summary(inder(1L:length(y), y, smooth.method = NULL), 
                   print = FALSE)
@@ -30,8 +30,14 @@ exp_slopes <- function(y) {
   
   # 'Compare S_upper and S_lower'
   #Q4 Does regressions involve also SDM cycle?
-  id_lower <- exp_start:(SDM - 1)
-  id_upper <- SDM:exp_end
+  id_lower <- exp_start:SDM 
+  id_upper <- (SDM + 1):exp_end
+  if(fluo_log) 
+    y <- log10(y)
+  
+  lower <- lm(y[id_lower] ~ id_lower)
+  upper <- lm(y[id_upper] ~ id_upper)
+  
   lower <- lm(y[id_lower] ~ id_lower)
   upper <- lm(y[id_upper]~ id_upper)
   list(slopes = c(lower = as.vector(coef(lower)[2]), 
@@ -42,15 +48,23 @@ exp_slopes <- function(y) {
        borders = c(exp_start, SDM, exp_end))
 }
 
-
-plot.slopes <- function(x) {
-  plot(x[["fluo"]])
+plot.slopes <- function(x, fluo_log = FALSE) {
+  fluo <- x[["fluo"]]
+  plot(fluo, xlab = "Cycle", ylab = "Fluorescence")
   abline(x[["models"]][["upper"]], col = "red")
+  points((x[["borders"]][2] + 1):x[["borders"]][3], 
+         fluo[(x[["borders"]][2] + 1):x[["borders"]][3]],
+         col = "red", pch = 19)
+  
   abline(x[["models"]][["lower"]], col = "blue")
+  points(x[["borders"]][1]:x[["borders"]][2], 
+         fluo[x[["borders"]][1]:x[["borders"]][2]],
+         col = "blue", pch = 19)
 }
 
-tmp <- exp_slopes(reps[, 2])
-plot.slopes(tmp)
+
+tmp <- exp_slopes(reps[, 2] + 1, fluo_log = TRUE)
+plot.slopes(tmp, fluo_log = TRUE)
 
 
 
@@ -70,7 +84,7 @@ ybl <- y - bl
 # Part I ------------------------------------
 #slope lower and upper
 #QX Should data be exponential?
-slu <- exponential_slopes(ybl)
+slu <- exp_slopes(ybl, fluo_log = TRUE)[["slopes"]]
 
 while(slu["upper"] < slu["lower"]) {
   # 'decrease baseline by 1%'
@@ -79,7 +93,7 @@ while(slu["upper"] < slu["lower"]) {
   #not valid, because starting baseline is equal to the minimum observation
   #and substracting woul cause a baseline error.
   bl <- bl * 0.99
-  slu <- exponential_slopes(y - bl)
+  slu <- exp_slopes(y - bl, fluo_log = TRUE)[["slopes"]]
   print(slu)
 }
 
@@ -97,11 +111,11 @@ for(sth in 1L:100) {
     #Q7 what means - 2.step
     bl <- bl - 2*stp
     stp <- stp/2
-    slu <- get_exponential_phase(y - bl)
+    slu <- exp_slopes(y - bl)[["slopes"]]
     print("A")
   } else {
     bl <- bl + stp
-    slu <- exponential_slopes(y - bl)
+    slu <- exp_slopes(y - bl)[["slopes"]]
   }
   print(abs(slu["upper"] - slu["lower"]))
 }
