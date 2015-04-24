@@ -24,14 +24,16 @@ exp_slopes <- function(y, fluo_log = FALSE) {
   # from the slope of the line through the data points in the lower half.'
   
   #Q3 How to define lower and upper border of exponential phase?
-  exp_start <- trunc(ders[["SDM"]] - 1.3 * (ders[["SDm"]] - ders[["SDM"]]), 0)
-  exp_end <- trunc(ders[["SDm"]] + 1.3 * (ders[["SDm"]] - ders[["SDM"]]), 0)
-  SDM <- trunc(ders[["SDM"]], 0)
+  #Stefan: SDM and SDm
+  #risky attempt to slightly elongate the regions
+  exp_start <- floor(ders[["SDM"]])
+  exp_end <- ceiling(ders[["SDm"]])
   
   # 'Compare S_upper and S_lower'
   #Q4 Does regressions involve also SDM cycle?
-  id_lower <- exp_start:SDM 
-  id_upper <- (SDM + 1):exp_end
+  midpoint <- round(mean(c(exp_start, exp_end))) - 1
+  id_lower <- exp_start:midpoint 
+  id_upper <- (midpoint + 1):exp_end
   if(fluo_log) 
     y <- log10(y)
   
@@ -45,7 +47,7 @@ exp_slopes <- function(y, fluo_log = FALSE) {
        models = list(lower = lower,
                      upper = upper),
        fluo = y,
-       borders = c(exp_start, SDM, exp_end))
+       borders = c(exp_start, midpoint, exp_end))
 }
 
 plot.slopes <- function(x, fluo_log = FALSE) {
@@ -64,7 +66,7 @@ plot.slopes <- function(x, fluo_log = FALSE) {
 
 
 tmp <- exp_slopes(reps[, 2] + 1, fluo_log = TRUE)
-plot.slopes(tmp, fluo_log = TRUE)
+plot.slopes(tmp, fluo_log = FALSE)
 
 
 

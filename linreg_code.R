@@ -18,7 +18,7 @@ linreg <- function(cyc = 1L:length(fluo), fluo, max.it = 100) {
   }
   
   #part II of figure 3A
-  step <- 0.5*baseline
+  step <- 0.005*baseline
   baseline <- baseline + step
   fluo_c <- fluo - baseline
   sl <- get_slopes(cyc, fluo_c)
