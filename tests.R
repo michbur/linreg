@@ -1,7 +1,7 @@
 library(qpcR)
 library(chipPCR)
-source("linreg_code.R")
-linreg(fluo = reps[, 2])
+source("baselining.R")
+baseline(fluo = reps[, 2])
 
 #threshold log(fluo) 0.113
 #eff 1,831
