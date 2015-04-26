@@ -13,9 +13,12 @@
 #' library(qpcR)
 #' exp_slopes(reps[, 2])
 
-exp_slopes <- function(y, fluo_log = FALSE) {
+exp_slopes <- function(cyc, fluo, fluo_log = FALSE) {
+  if(fluo_log) 
+    fluo <- log10(fluo)
+    
   # 'Determine SDM cycle'
-  ders <- summary(inder(1L:length(y), y, smooth.method = NULL), 
+  ders <- summary(inder(cyc, fluo, smooth.method = NULL), 
                   print = FALSE)
   # 'For each sample that shows amplification, an iterative 
   # algorithm than repeatedly adjusts the baseline value until 
@@ -34,19 +37,16 @@ exp_slopes <- function(y, fluo_log = FALSE) {
   midpoint <- round(mean(c(exp_start, exp_end))) - 1
   id_lower <- exp_start:midpoint 
   id_upper <- (midpoint + 1):exp_end
-  if(fluo_log) 
-    y <- log10(y)
   
-  lower <- lm(y[id_lower] ~ id_lower)
-  upper <- lm(y[id_upper] ~ id_upper)
   
-  lower <- lm(y[id_lower] ~ id_lower)
-  upper <- lm(y[id_upper]~ id_upper)
+  lower <- lm(fluo[id_lower] ~ id_lower)
+  upper <- lm(fluo[id_upper] ~ id_upper)
+  
   list(slopes = c(lower = as.vector(coef(lower)[2]), 
                   upper = as.vector(coef(upper))[2]),
        models = list(lower = lower,
                      upper = upper),
-       fluo = y,
+       fluo = fluo,
        borders = c(exp_start, midpoint, exp_end))
 }
 
@@ -69,59 +69,68 @@ tmp <- exp_slopes(reps[, 2] + 1, fluo_log = TRUE)
 plot.slopes(tmp, fluo_log = FALSE)
 
 
-
-
-# Part 0 ------------------------------------
-y <- reps[, 4]
-# 'Set baseline to minimum observation'
-bl <- min(y)
-#Q1 Does apply baseline mean substract baseline? 
-#y after baselining
-ybl <- y - bl
-# 'Samples are skipped when less than seven times 
-# increase in fluorescence values is observed.'
-#Q2 After baselining minimum value is 0. We need to 
-#compare highest value and second lowest value
-#if(max(ybl)/min(ybl[ybl != 0]) > 7) {
-# Part I ------------------------------------
-#slope lower and upper
-#QX Should data be exponential?
-slu <- exp_slopes(ybl, fluo_log = TRUE)[["slopes"]]
-
-while(slu["upper"] < slu["lower"]) {
-  # 'decrease baseline by 1%'
-  #Q5 what to do if baseline is negative? should I substract 0.01 from the
-  #baseline or calculate 0.99 of already negative baseline? Substracting seems
-  #not valid, because starting baseline is equal to the minimum observation
-  #and substracting woul cause a baseline error.
-  bl <- bl * 0.99
-  slu <- exp_slopes(y - bl, fluo_log = TRUE)[["slopes"]]
-  print(slu)
-}
-
-#when while loop ends, we know that slu["upper"] > slu["lower"]
-stp <- 0.005 * bl
-
-# Part II ------------------------------------
-#Q6 What if step is negative?
-bl <- bl + stp
-ybl <- y - bl
-
-#while(abs(slu["upper"] - slu["lower"]) > 1e-5) {
-for(sth in 1L:100) {
-  if(slu["upper"] < slu["lower"]) {
-    #Q7 what means - 2.step
-    bl <- bl - 2*stp
-    stp <- stp/2
-    slu <- exp_slopes(y - bl)[["slopes"]]
-    print("A")
-  } else {
-    bl <- bl + stp
-    slu <- exp_slopes(y - bl)[["slopes"]]
+baseline <- function(cyc = 1L:length(fluo), fluo, max.it = 100) {
+  # Part 0 ------------------------------------
+  # 'Set baseline to minimum observation'
+  bl <- min(fluo)
+  #Q1 Does apply baseline mean substract baseline? 
+  #y after baselining
+  fluo_bl <- fluo - bl
+  # 'Samples are skipped when less than seven times 
+  # increase in fluorescence values is observed.'
+  #Q2 After baselining minimum value is 0. We need to 
+  #compare highest value and second lowest value
+  #if(max(fluo_bl)/min(fluo_bl[fluo_bl != 0]) > 7) {
+  # Part I ------------------------------------
+  #slope lower and upper
+  #QX Should data be exponential?
+  slu <- exp_slopes(cyc, fluo_bl)[["slopes"]]
+  
+  it <- 0
+  while(slu["upper"] < slu["lower"] || it < max.it) {
+    # 'decrease baseline by 1%'
+    #Q5 what to do if baseline is negative? should I substract 0.01 from the
+    #baseline or calculate 0.99 of already negative baseline? Substracting seems
+    #not valid, because starting baseline is equal to the minimum observation
+    #and substracting woul cause a baseline error.
+    bl <- bl * 0.99
+    slu <- exp_slopes(cyc, fluo - bl)[["slopes"]]
+    it <- it + 1
   }
-  print(abs(slu["upper"] - slu["lower"]))
+  
+  #when while loop ends, we know that slu["upper"] > slu["lower"]
+  stp <- 0.005 * bl
+  
+  # REMOVE ME
+  cat("Finished part I. Number of iterations: ", it, "\n")
+  
+  # Part II ------------------------------------
+  #Q6 What if step is negative?
+  bl <- bl + stp
+  fluo_bl <- fluo - bl
+  
+  it <- 0
+  while(abs(slu["upper"] - slu["lower"]) > 1e-5 && it < max.it) {
+    if(slu["upper"] < slu["lower"]) {
+      #Q7 what means - 2.step
+      bl <- bl - 2*stp
+      stp <- stp/2
+      slu <- exp_slopes(cyc, fluo - bl)[["slopes"]]
+      it <- it + 1
+
+    } else {
+      bl <- bl + stp
+      slu <- exp_slopes(cyc, fluo - bl)[["slopes"]]
+      it <- it + 1
+    }
+  }
+  
+  # REMOVE ME
+  cat("Finished part I. Number of iterations: ", it, "\n")
+  
+  bl
 }
 
 
-
+baseline(fluo = reps[, 2])
 
