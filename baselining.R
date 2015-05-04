@@ -32,7 +32,7 @@ exp_slopes <- function(cyc, fluo, fluo_log = FALSE) {
   #phase starts at cycle c. Of course coming down from the plateau 
   #exp_start <- takeoff(pcrfit(data.frame(cyc, fluo), 1, 2, l5))[["top"]]
   exp_end <- round(ders[["SDM"]], 0)
-  exp_start <- min(which(sapply(2L:exp_end, function(fluo_id) (fluo[fluo_id] - fluo[fluo_id - 1])/max(fluo)) > 0.005))
+  exp_start <- (exp_end:2)[which.max(sapply(exp_end:2, function(fluo_id) fluo[fluo_id] - fluo[fluo_id - 1]) < 0)]
 
   # 'Compare S_upper and S_lower'
   #Q4 Does regressions involve also SDM cycle?
