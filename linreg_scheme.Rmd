@@ -11,8 +11,8 @@ graph TB
 subgraph linreg
 A[raw sample]==>B[set baseline to <br/> minimum observation]
 B==>C[apply baseline]
-C==>D{check for amplification}
-D== yes ==>Eyes[Determine SDM cycle (end of the e)]
+C==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}
+D== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]
 D== no ==>Eno[skip sample]
 
 style A fill:#DCEBE3
@@ -26,7 +26,7 @@ end
 subgraph questions
 A2[no questions]==>B2[no questions]
 B2==>C2[Does apply baseline mean substract baseline? <br/> If the baseline is smaller than 0, should it be also substracted?]
-C2==>D2[Samples are skipped when less than seven times <br/> increase in fluorescence values is observed]
+C2==>D2[If the minimum value is 0, should I add a small epsilon to fluoescence values?]
 D2== yes ==>Eyes2[Which algorithm was used for derivation?]
 D2== no ==>Eno2[no questions]
 
@@ -49,32 +49,43 @@ mermaid(diagram)
 diagram <- "
 graph TB
 subgraph linreg
-B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]==>C[apply baseline]
-C==>D{compare S-upper and S-lower}
+A[Determine start of the exponential phase <br/> The start of the exponential phase is defined by a jump: <br/> when fluorescence in cycle C+1 - counting from plateau - is less than <br/>the fluorescence in cycle C then the exponential phase starts at cycle c.]==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]
+B==>C[apply baseline]
+C==>D{compare S-upper and S-lower <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}
 D== S-upper > S-lower ==>Esmaller[Define step: 0.005*baseline]
 D== S-upper < S-lower ==>Ebigger[Decrease baseline by 0.01]
 Ebigger== S-upper < S-lower ==>F{baseline < min. observ}
 F== no ==>C
 F== yes ==>G[baseline error]
 
-
-style B fill:#77DFC9
-style C fill:#DEDBBA
-style D fill:#77DFC9
-style Ebigger fill:#DEDBBA
-style Esmaller fill:#DEDBBA
-style F fill:#77DFC9
-style G fill:#DEDBBA
+style A fill:#77DFC9
+style B fill:#DEDBBA
+style C fill:#77DFC9
+style D fill:#DEDBBA
+style Ebigger fill:#77DFC9
+style Esmaller fill:#77DFC9
+style F fill:#DEDBBA
+style G fill:#77DFC9
 end
 
 subgraph questions
-B2[ANSWERED]==>C2[no questions]
+A2[ANSWERED]==>B2[no questions]
+B2==>C2[no questions]
 C2==>D2[no questions]
+D2== S-upper > S-lower ==>Esmaller2[no questions]
+D2== S-upper < S-lower ==>Ebigger2[no questions]
+Ebigger2== S-upper < S-lower ==>F2[no questions]
+F2== no ==>C2
+F2== yes ==>G2[no questions]
 
-
-style B2 fill:#77DFC9
-style C2 fill:#DEDBBA
-style D2 fill:#77DFC9
+style A2 fill:#77DFC9
+style B2 fill:#DEDBBA
+style C2 fill:#77DFC9
+style D2 fill:#DEDBBA
+style Ebigger2 fill:#77DFC9
+style Esmaller2 fill:#77DFC9
+style F2 fill:#DEDBBA
+style G2 fill:#77DFC9
 end
 "
 
