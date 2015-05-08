@@ -74,7 +74,7 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-A2[ANSWERED]==>B2[ANSWERED]
+A2[ANSWERED]==>B2[Substracting mean of 6th and 7h points <br/>  before plateau will make a lot of data negative.]
 B2==>C2[no questions]
 C2==>D2[no questions]
 D2== Su > Sl ==>Esmaller2[no questions]
@@ -142,3 +142,7 @@ end
 
 mermaid(diagram)
 ```
+
+
+
+## Setting W-o-L
