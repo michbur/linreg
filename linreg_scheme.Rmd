@@ -1,3 +1,6 @@
+---
+output: html_document
+---
 # linreg algorithm - R implementation
 
 ## Baselining
@@ -14,6 +17,7 @@ B==>C[apply baseline]
 C==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}
 D== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]
 D== no ==>Eno[skip sample]
+Eyes==>F[Move to Part I]
 
 style A fill:#DCEBE3
 style B fill:#77DFC9
@@ -51,12 +55,13 @@ graph TB
 subgraph linreg
 A[Determine start of the exponential phase <br/> The start of the exponential phase is defined by a jump: <br/> when fluorescence in cycle C+1 - counting from plateau - is less than <br/>the fluorescence in cycle C then the exponential phase starts at cycle c.]==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]
 B==>C[apply baseline]
-C==>D{compare S-upper and S-lower <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}
-D== S-upper > S-lower ==>Esmaller[Define step: 0.005*baseline]
-D== S-upper < S-lower ==>Ebigger[Decrease baseline by 0.01]
-Ebigger== S-upper < S-lower ==>F{baseline < min. observ}
+C==>D{compare Su and Sl <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}
 F== no ==>C
+D== Su > Sl ==>Esmaller[Define step: 0.005*baseline]
+D== Su < Sl ==>Ebigger[Decrease baseline by 0.01]
+Ebigger==>F{baseline < min. observ}
 F== yes ==>G[baseline error]
+Esmaller==>H[Move to part II]
 
 style A fill:#77DFC9
 style B fill:#DEDBBA
@@ -69,12 +74,12 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-A2[ANSWERED]==>B2[no questions]
+A2[ANSWERED]==>B2[ANSWERED]
 B2==>C2[no questions]
 C2==>D2[no questions]
-D2== S-upper > S-lower ==>Esmaller2[no questions]
-D2== S-upper < S-lower ==>Ebigger2[no questions]
-Ebigger2== S-upper < S-lower ==>F2[no questions]
+D2== Su > Sl ==>Esmaller2[no questions]
+D2== Su < Sl ==>Ebigger2[no questions]
+Ebigger2==>F2[no questions]
 F2== no ==>C2
 F2== yes ==>G2[no questions]
 
@@ -86,6 +91,52 @@ style Ebigger2 fill:#77DFC9
 style Esmaller2 fill:#77DFC9
 style F2 fill:#DEDBBA
 style G2 fill:#77DFC9
+end
+"
+
+mermaid(diagram)
+```
+
+
+
+### Part II
+
+```{r,echo=FALSE}
+
+diagram <- "
+graph TB
+subgraph linreg
+A[BL = BL + step]==>B[apply baseline]
+B==>C{compare Su and Sl}
+Dbigger==>B
+C== Su < Sl ==>Dbigger[BL = BL - 2.step <br/> step = 0.5*step]
+C== Su - Sl < 1e-05 ==>E[Baseline corrected sample]
+
+
+C== Su > Sl ==>A
+
+
+
+style A fill:#77DFC9
+style B fill:#DEDBBA
+style C fill:#77DFC9
+style Dbigger fill:#DEDBBA
+style E fill:#DEDBBA
+end
+
+subgraph questions
+A2[what if step is negative? should it be added or substracted?]==>B2[no questions]
+B2==>C2[Should Su and Sl  <br/>be compared as they were in the part I?]
+C2== Su < Sl ==>Dbigger2[what means 2.step?]
+Dbigger2==>B2
+C2== Su - Sl < 1e-05 ==>E2[Baseline corrected sample]
+C2== Su > Sl ==>A2
+
+style A2 fill:#77DFC9
+style B2 fill:#DEDBBA
+style C2 fill:#77DFC9
+style Dbigger2 fill:#DEDBBA
+style E2 fill:#DEDBBA
 end
 "
 
