@@ -29,9 +29,9 @@ end
 
 subgraph questions
 A2[no questions]==>B2[no questions]
-B2==>C2[Does apply baseline mean substract baseline? <br/> If the baseline is smaller than 0, should it be also substracted?]
-C2==>D2[If the minimum value is 0, should I add a small epsilon to fluoescence values?]
-D2== yes ==>Eyes2[Which algorithm was used for derivation?]
+B2==>C2[0_1. Linreg manual indicates that apply baseline mean substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
+C2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
+D2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]
 D2== no ==>Eno2[no questions]
 
 style A2 fill:#DCEBE3
@@ -74,7 +74,7 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-A2[ANSWERED]==>B2[Substracting mean of 6th and 7h points <br/>  before plateau will make a lot of data negative.]
+A2[What if there are no detectable jump?]==>B2[no questions]
 B2==>C2[no questions]
 C2==>D2[no questions]
 D2== Su > Sl ==>Esmaller2[no questions]
@@ -107,15 +107,16 @@ diagram <- "
 graph TB
 subgraph linreg
 A[BL = BL + step]==>B[apply baseline]
-B==>C{compare Su and Sl}
-Dbigger==>B
-C== Su < Sl ==>Dbigger[BL = BL - 2.step <br/> step = 0.5*step]
-C== Su - Sl < 1e-05 ==>E[Baseline corrected sample]
 
+B==>C{compare Su and Sl}
+
+Dbigger[BL = BL - 2.step <br/> step = 0.5*step]==>B
+
+C==Su - Sl < 1e-05==>E[Baseline corrected sample]
+
+C== Su < Sl ==>Dbigger
 
 C== Su > Sl ==>A
-
-
 
 style A fill:#77DFC9
 style B fill:#DEDBBA
@@ -125,24 +126,22 @@ style E fill:#DEDBBA
 end
 
 subgraph questions
-A2[what if step is negative? should it be added or substracted?]==>B2[no questions]
-B2==>C2[Should Su and Sl  <br/>be compared as they were in the part I?]
-C2== Su < Sl ==>Dbigger2[what means 2.step?]
+A2[II_1. what if step is negative? should it be added or substracted?]==>B2[no questions]
+B2==>C2[no questions]
+C2== Su < Sl ==>Dbigger2[II_2. what means 2.step?]
 Dbigger2==>B2
-C2== Su - Sl < 1e-05 ==>E2[Baseline corrected sample]
+C2== Su - Sl < 1e-05 ==>E2[no questions]
 C2== Su > Sl ==>A2
 
 style A2 fill:#77DFC9
-style B2 fill:#DEDBBA
-style C2 fill:#77DFC9
-style Dbigger2 fill:#DEDBBA
-style E2 fill:#DEDBBA
-end
+  style B2 fill:#DEDBBA
+  style C2 fill:#77DFC9
+  style Dbigger2 fill:#DEDBBA
+  style E2 fill:#DEDBBA
+  end
+
+
 "
 
 mermaid(diagram)
 ```
-
-
-
-## Setting W-o-L
