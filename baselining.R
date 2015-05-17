@@ -22,7 +22,6 @@ exp_slopes <- function(cyc, fluo, fluo_log = FALSE) {
   # the slope of the regression line through the data points in
   # the upper half of the exponential phase differs less than 0.0001 
   # from the slope of the line through the data points in the lower half.'
-  
   log_fluo <- log10(fluo)
   
   #Q3 How to define lower and upper border of exponential phase?
@@ -96,7 +95,7 @@ baseline <- function(cyc = 1L:length(fluo), fluo, max.it = 100) {
                   print = FALSE)
 
   bl <- mean(fluo[ders[["SDm"]] - 6], fluo[ders[["SDm"]] - 7])
-  fluo_bl <- fluo - bl
+  fluo_bl <- fluo + bl
   
   
   #QX Should data be logarythmized? AX: Yeah, you are 

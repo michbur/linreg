@@ -16,3 +16,5 @@ lapply(2L:ncol(reps), function(i) {
   
   sapply(exp_end:2, function(fluo_id) (reps[fluo_id, i] - reps[fluo_id - 1, i])) 
 })
+
+
