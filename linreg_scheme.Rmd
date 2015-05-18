@@ -1,11 +1,13 @@
 ---
-output: html_document
+output:
+  html_document:
+    toc: yes
 ---
 # linreg algorithm - R implementation
 
-## Baselining
+# Baselining
 
-### Part 0
+## Part 0
 
 ```{r,echo=FALSE}
 library(DiagrammeR)
@@ -29,7 +31,7 @@ end
 
 subgraph questions
 A2[no questions]==>B2[no questions]
-B2==>C2[0_1. Linreg manual indicates that apply baseline mean substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
+B2==>C2[0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
 C2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
 D2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]
 D2== no ==>Eno2[no questions]
@@ -46,7 +48,7 @@ end
 mermaid(diagram)
 ```
 
-### Part I
+## Part I
 
 ```{r,echo=FALSE}
 
@@ -98,8 +100,7 @@ mermaid(diagram)
 ```
 
 
-
-### Part II
+## Part II
 
 ```{r,echo=FALSE}
 
@@ -145,3 +146,8 @@ style A2 fill:#77DFC9
 
 mermaid(diagram)
 ```
+
+
+# Additional questions
+
+"Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed." - how bug was corrected?

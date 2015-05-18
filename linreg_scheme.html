@@ -68,33 +68,48 @@ img {
 
 
 
+<div id="TOC">
+<ul>
+<li><a href="#linreg-algorithm---r-implementation">linreg algorithm - R implementation</a></li>
+<li><a href="#baselining">Baselining</a><ul>
+<li><a href="#part-0">Part 0</a></li>
+<li><a href="#part-i">Part I</a></li>
+<li><a href="#part-ii">Part II</a></li>
+</ul></li>
+<li><a href="#additional-questions">Additional questions</a></li>
+</ul>
+</div>
 
 <div id="linreg-algorithm---r-implementation" class="section level1">
 <h1>linreg algorithm - R implementation</h1>
-<div id="baselining" class="section level2">
-<h2>Baselining</h2>
-<div id="part-0" class="section level3">
-<h3>Part 0</h3>
-<p><div id="htmlwidget-8835" style="width:672px;height:480px;" class="DiagrammeR"></div>
-<script type="application/json" data-for="htmlwidget-8835">{ "x": {
- "diagram": "\ngraph TB\nsubgraph linreg\nA[raw sample]==>B[set baseline to <br/> minimum observation]\nB==>C[apply baseline]\nC==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}\nD== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]\nD== no ==>Eno[skip sample]\nEyes==>F[Move to Part I]\n\nstyle A fill:#DCEBE3\nstyle B fill:#77DFC9\nstyle C fill:#DEDBBA\nstyle D fill:#77DFC9\nstyle Eyes fill:#DEDBBA\nstyle Eno fill:#DEDBBA\nend\n\nsubgraph questions\nA2[no questions]==>B2[no questions]\nB2==>C2[0_1. Linreg manual indicates that apply baseline mean substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]\nC2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]\nD2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]\nD2== no ==>Eno2[no questions]\n\nstyle A2 fill:#DCEBE3\nstyle B2 fill:#77DFC9\nstyle C2 fill:#DEDBBA\nstyle D2 fill:#77DFC9\nstyle Eyes2 fill:#DEDBBA\nstyle Eno2 fill:#DEDBBA\nend\n" 
+</div>
+<div id="baselining" class="section level1">
+<h1>Baselining</h1>
+<div id="part-0" class="section level2">
+<h2>Part 0</h2>
+<p><div id="htmlwidget-7456" style="width:672px;height:480px;" class="DiagrammeR"></div>
+<script type="application/json" data-for="htmlwidget-7456">{ "x": {
+ "diagram": "\ngraph TB\nsubgraph linreg\nA[raw sample]==>B[set baseline to <br/> minimum observation]\nB==>C[apply baseline]\nC==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}\nD== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]\nD== no ==>Eno[skip sample]\nEyes==>F[Move to Part I]\n\nstyle A fill:#DCEBE3\nstyle B fill:#77DFC9\nstyle C fill:#DEDBBA\nstyle D fill:#77DFC9\nstyle Eyes fill:#DEDBBA\nstyle Eno fill:#DEDBBA\nend\n\nsubgraph questions\nA2[no questions]==>B2[no questions]\nB2==>C2[0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]\nC2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]\nD2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]\nD2== no ==>Eno2[no questions]\n\nstyle A2 fill:#DCEBE3\nstyle B2 fill:#77DFC9\nstyle C2 fill:#DEDBBA\nstyle D2 fill:#77DFC9\nstyle Eyes2 fill:#DEDBBA\nstyle Eno2 fill:#DEDBBA\nend\n" 
 },"evals": [  ] }</script></p>
 </div>
-<div id="part-i" class="section level3">
-<h3>Part I</h3>
-<p><div id="htmlwidget-6570" style="width:672px;height:480px;" class="DiagrammeR"></div>
-<script type="application/json" data-for="htmlwidget-6570">{ "x": {
+<div id="part-i" class="section level2">
+<h2>Part I</h2>
+<p><div id="htmlwidget-5957" style="width:672px;height:480px;" class="DiagrammeR"></div>
+<script type="application/json" data-for="htmlwidget-5957">{ "x": {
  "diagram": "\ngraph TB\nsubgraph linreg\nA[Determine start of the exponential phase <br/> The start of the exponential phase is defined by a jump: <br/> when fluorescence in cycle C+1 - counting from plateau - is less than <br/>the fluorescence in cycle C then the exponential phase starts at cycle c.]==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]\nB==>C[apply baseline]\nC==>D{compare Su and Sl <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}\nF== no ==>C\nD== Su > Sl ==>Esmaller[Define step: 0.005*baseline]\nD== Su < Sl ==>Ebigger[Decrease baseline by 0.01]\nEbigger==>F{baseline < min. observ}\nF== yes ==>G[baseline error]\nEsmaller==>H[Move to part II]\n\nstyle A fill:#77DFC9\nstyle B fill:#DEDBBA\nstyle C fill:#77DFC9\nstyle D fill:#DEDBBA\nstyle Ebigger fill:#77DFC9\nstyle Esmaller fill:#77DFC9\nstyle F fill:#DEDBBA\nstyle G fill:#77DFC9\nend\n\nsubgraph questions\nA2[What if there are no detectable jump?]==>B2[no questions]\nB2==>C2[no questions]\nC2==>D2[no questions]\nD2== Su > Sl ==>Esmaller2[no questions]\nD2== Su < Sl ==>Ebigger2[no questions]\nEbigger2==>F2[no questions]\nF2== no ==>C2\nF2== yes ==>G2[no questions]\n\nstyle A2 fill:#77DFC9\nstyle B2 fill:#DEDBBA\nstyle C2 fill:#77DFC9\nstyle D2 fill:#DEDBBA\nstyle Ebigger2 fill:#77DFC9\nstyle Esmaller2 fill:#77DFC9\nstyle F2 fill:#DEDBBA\nstyle G2 fill:#77DFC9\nend\n" 
 },"evals": [  ] }</script></p>
 </div>
-<div id="part-ii" class="section level3">
-<h3>Part II</h3>
-<p><div id="htmlwidget-8838" style="width:672px;height:480px;" class="DiagrammeR"></div>
-<script type="application/json" data-for="htmlwidget-8838">{ "x": {
+<div id="part-ii" class="section level2">
+<h2>Part II</h2>
+<p><div id="htmlwidget-7417" style="width:672px;height:480px;" class="DiagrammeR"></div>
+<script type="application/json" data-for="htmlwidget-7417">{ "x": {
  "diagram": "\ngraph TB\nsubgraph linreg\nA[BL = BL + step]==>B[apply baseline]\n\nB==>C{compare Su and Sl}\n\nDbigger[BL = BL - 2.step <br/> step = 0.5*step]==>B\n\nC==Su - Sl < 1e-05==>E[Baseline corrected sample]\n\nC== Su < Sl ==>Dbigger\n\nC== Su > Sl ==>A\n\nstyle A fill:#77DFC9\nstyle B fill:#DEDBBA\nstyle C fill:#77DFC9\nstyle Dbigger fill:#DEDBBA\nstyle E fill:#DEDBBA\nend\n\nsubgraph questions\nA2[II_1. what if step is negative? should it be added or substracted?]==>B2[no questions]\nB2==>C2[no questions]\nC2== Su < Sl ==>Dbigger2[II_2. what means 2.step?]\nDbigger2==>B2\nC2== Su - Sl < 1e-05 ==>E2[no questions]\nC2== Su > Sl ==>A2\n\nstyle A2 fill:#77DFC9\n  style B2 fill:#DEDBBA\n  style C2 fill:#77DFC9\n  style Dbigger2 fill:#DEDBBA\n  style E2 fill:#DEDBBA\n  end\n\n\n" 
 },"evals": [  ] }</script></p>
 </div>
 </div>
+<div id="additional-questions" class="section level1">
+<h1>Additional questions</h1>
+<p>“Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed.” - how bug was corrected?</p>
 </div>
 
 
