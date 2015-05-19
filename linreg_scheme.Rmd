@@ -1,9 +1,11 @@
 ---
+title: "linreg algorithm"
+author: "Michal Burdukiewicz"
+date: "Tuesday, May 19, 2015"
 output:
   html_document:
     toc: yes
 ---
-# linreg algorithm - R implementation
 
 # Baselining
 
@@ -76,7 +78,7 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-A2[What if there are no detectable jump?]==>B2[no questions]
+A2[I.01. What if there are no detectable jump? <br/> I.02. What do to in case of sample without visible plateau phase?]==>B2[no questions]
 B2==>C2[no questions]
 C2==>D2[no questions]
 D2== Su > Sl ==>Esmaller2[no questions]
