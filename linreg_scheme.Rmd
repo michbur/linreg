@@ -12,7 +12,7 @@ output:
 
 ## Scheme questions
 
-Naming convention: Q, number of part (roman numerals), underscore, number of question on scheme (greek numerals).
+Naming convention: Q, number of part (roman numerals), underscore, number of question on diagram (greek numerals).
 
 ```{r,echo=FALSE,message=FALSE,results='asis'}
 #Each question must start with Q/[no space/]numberOfPart_numberOfQuestion.
@@ -65,7 +65,7 @@ end
 subgraph questions
 A2[no questions]==>B2[no questions]
 B2==>C2[Q0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
-C2==>D2[Q0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
+C2==>D2[Q0_2. If the minimum value is 0, should I add a small epsilon to fluorescence values?]
 D2== yes ==>Eyes2[Q0_3. Which algorithm was used for numerical derivation?]
 
 D2== no ==>Eno2[no questions]
@@ -111,8 +111,8 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-START2[Move from part 0]==>A2[QI_1. Hot to define start of the exponential phase  if there are no detectable jump?]
-A2==>B2[QI_2. Ho to set a baseline as the average of the 6th and the 7th point below the plateau phase <br/> when plateau phase is not visible?]
+START2[Move from part 0]==>A2[QI_1. How to define start of the exponential phase  if there are no detectable jump?]
+A2==>B2[QI_2. How to set a baseline as the average of the 6th and the 7th point below the plateau phase <br/> when plateau phase is not visible?]
 B2==>C2[no questions]
 C2==>D2[no questions]
 D2== S_U > S_L ==>Esmaller2[no questions]
@@ -159,10 +159,10 @@ style E fill:#DEDBBA
 end
 
 subgraph questions
-START2[Move from part I]==>A2[QII_1. what if step is negative? should it be added or substracted?]
+START2[Move from part I]==>A2[QII_1. What if step is negative? should it be added or substracted?]
 A2==>B2[no questions]
 B2==>C2[no questions]
-C2== S_U < S_L ==>Dbigger2[QII_2. what means 2.step?]
+C2== S_U < S_L ==>Dbigger2[QII_2. What means 2.step?]
 Dbigger2==>B2
 C2== S_U - S_L < 1e-05 ==>E2[no questions]
 C2== S_U > S_L ==>A2
