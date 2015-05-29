@@ -10,7 +10,7 @@ output:
 
 # Questions
 
-## Scheme questions
+## Diagram questions
 
 Naming convention: Q, number of part (roman numerals), underscore, number of question on diagram (greek numerals).
 
