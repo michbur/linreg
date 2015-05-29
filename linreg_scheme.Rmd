@@ -1,27 +1,43 @@
 ---
-title: "linreg algorithm"
+title: "linreg algorithm - R implementation"
 author: "Michal Burdukiewicz"
-date: "Tuesday, May 19, 2015"
+date: "May 29, 2015"
 output:
   html_document:
     toc: yes
 ---
 
 
-## Rules
+# Questions
 
-Each question must start with Q/[no space/]numberOfPart_numberOfQuestion.
-Only one question per line.
+## Scheme questions
+
+Naming convention: Q, number of part (roman numerals), underscore, number of question on scheme (greek numerals).
+
+```{r,echo=FALSE,message=FALSE,results='asis'}
+#Each question must start with Q/[no space/]numberOfPart_numberOfQuestion.
+#Only one question per line.
+source("extract_questions.R")
+
+cat(extract_questions("linreg_scheme.Rmd"))
+
+```
+
+## Additional questions
+
+From manual: "Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed." - how bug was corrected?
 
 
-## List of abbrevations
+# List of abbrevations
 
 * BL: baseline.
-* SDM: second derivative maximum.
 * S_L: slope of points in the lower half of the exponential phase.
 * S_U: slope of points in the upper half of the exponential phase.
+* SDM: second derivative maximum, end of the exponential phase.
+* Start of the exponential phase: a cycle C for which (counting from plateau) fluorescence value is bigger than in cycle C + 1.
 
-## Baselining
+
+# Baselining
 
 
 ## Part 0
@@ -48,9 +64,9 @@ end
 
 subgraph questions
 A2[no questions]==>B2[no questions]
-B2==>C2[0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
-C2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
-D2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]
+B2==>C2[Q0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
+C2==>D2[Q0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
+D2== yes ==>Eyes2[Q0_3. Which algorithm was used for numerical derivation?]
 
 D2== no ==>Eno2[no questions]
 
@@ -73,7 +89,8 @@ mermaid(diagram)
 diagram <- "
 graph TB
 subgraph linreg
-A[Determine start of the exponential phase <br/> The start of the exponential phase is defined by a jump: <br/> when fluorescence in cycle C+1 - counting from plateau - is less than <br/>the fluorescence in cycle C then the exponential phase starts at cycle c.]==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]
+START[Move from part 0]==>A[Determine start of the exponential phase.]
+A==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]
 B==>C[apply baseline]
 C==>D{compare S_U and S_L <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}
 F== no ==>C
@@ -94,7 +111,8 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-A2[I.01. What if there are no detectable jump? <br/> I.02. What do to in case of sample without visible plateau phase?]==>B2[no questions]
+START2[Move from part 0]==>A2[QI_1. Hot to define start of the exponential phase  if there are no detectable jump?]
+A2==>B2[QI_2. Ho to set a baseline as the average of the 6th and the 7th point below the plateau phase <br/> when plateau phase is not visible?]
 B2==>C2[no questions]
 C2==>D2[no questions]
 D2== S_U > S_L ==>Esmaller2[no questions]
@@ -125,7 +143,8 @@ mermaid(diagram)
 diagram <- "
 graph TB
 subgraph linreg
-A[BL = BL + step]==>B[apply baseline]
+START[Move from part I]==>A[BL = BL + step]
+A==>B[apply baseline]
 B==>C{compare S_U and S_L}
 Dbigger[BL = BL - 2.step <br/> step = 0.5*step]==>B
 C==S_U - S_L < 1e-05==>E[Baseline corrected sample]
@@ -140,7 +159,8 @@ style E fill:#DEDBBA
 end
 
 subgraph questions
-A2[QII_1. what if step is negative? should it be added or substracted?]==>B2[no questions]
+START2[Move from part I]==>A2[QII_1. what if step is negative? should it be added or substracted?]
+A2==>B2[no questions]
 B2==>C2[no questions]
 C2== S_U < S_L ==>Dbigger2[QII_2. what means 2.step?]
 Dbigger2==>B2
@@ -158,7 +178,3 @@ style A2 fill:#77DFC9
 mermaid(diagram)
 ```
 
-
-# Additional questions
-
-"Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed." - how bug was corrected?
