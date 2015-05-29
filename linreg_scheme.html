@@ -71,27 +71,40 @@ img {
 
 <div id="linreg-algorithm---r-implementation" class="section level1">
 <h1>linreg algorithm - R implementation</h1>
+<div id="rules" class="section level2">
+<h2>Rules</h2>
+<p>Each question must start with Q/[no space/]numberOfPart_numberOfQuestion. Question.</p>
+</div>
+<div id="list-of-abbrevations" class="section level2">
+<h2>List of abbrevations</h2>
+<ul>
+<li>BL: baseline.</li>
+<li>SDM: second derivative maximum.</li>
+<li>S_L: slope of points in the lower half of the exponential phase.</li>
+<li>S_U: slope of points in the upper half of the exponential phase.</li>
+</ul>
+</div>
 <div id="baselining" class="section level2">
 <h2>Baselining</h2>
 <div id="part-0" class="section level3">
 <h3>Part 0</h3>
-<p><div id="htmlwidget-8317" style="width:672px;height:480px;" class="DiagrammeR"></div>
-<script type="application/json" data-for="htmlwidget-8317">{ "x": {
- "diagram": "\ngraph TB\nsubgraph linreg\nA[raw sample]==>B[set baseline to <br/> minimum observation]\nB==>C[apply baseline]\nC==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}\nD== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]\nD== no ==>Eno[skip sample]\nEyes==>F[Move to Part I]\n\nstyle A fill:#DCEBE3\nstyle B fill:#77DFC9\nstyle C fill:#DEDBBA\nstyle D fill:#77DFC9\nstyle Eyes fill:#DEDBBA\nstyle Eno fill:#DEDBBA\nend\n\nsubgraph questions\nA2[no questions]==>B2[no questions]\nB2==>C2[0_1. Linreg manual indicates that apply baseline mean substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]\nC2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]\nD2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]\nD2== no ==>Eno2[no questions]\n\nstyle A2 fill:#DCEBE3\nstyle B2 fill:#77DFC9\nstyle C2 fill:#DEDBBA\nstyle D2 fill:#77DFC9\nstyle Eyes2 fill:#DEDBBA\nstyle Eno2 fill:#DEDBBA\nend\n" 
+<p><div id="htmlwidget-3916" style="width:672px;height:480px;" class="DiagrammeR"></div>
+<script type="application/json" data-for="htmlwidget-3916">{ "x": {
+ "diagram": "\ngraph TB\nsubgraph linreg\nA[raw sample]==>B[set baseline to <br/> minimum observation]\nB==>C[apply baseline]\nC==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}\nD== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]\nD== no ==>Eno[skip sample]\nEyes==>F[Move to Part I]\n\nstyle A fill:#DCEBE3\nstyle B fill:#77DFC9\nstyle C fill:#DEDBBA\nstyle D fill:#77DFC9\nstyle Eyes fill:#DEDBBA\nstyle Eno fill:#DEDBBA\nend\n\nsubgraph questions\nA2[no questions]==>B2[no questions]\nB2==>C2[Q0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]\nC2==>D2[Q0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]\nD2== yes ==>Eyes2[Q0_3. Which algorithm was used for numerical derivation?]\nD2== no ==>Eno2[no questions]\n\nstyle A2 fill:#DCEBE3\nstyle B2 fill:#77DFC9\nstyle C2 fill:#DEDBBA\nstyle D2 fill:#77DFC9\nstyle Eyes2 fill:#DEDBBA\nstyle Eno2 fill:#DEDBBA\nend\n" 
 },"evals": [  ] }</script></p>
 </div>
 <div id="part-i" class="section level3">
 <h3>Part I</h3>
-<p><div id="htmlwidget-373" style="width:672px;height:480px;" class="DiagrammeR"></div>
-<script type="application/json" data-for="htmlwidget-373">{ "x": {
- "diagram": "\ngraph TB\nsubgraph linreg\nA[Determine start of the exponential phase <br/> The start of the exponential phase is defined by a jump: <br/> when fluorescence in cycle C+1 - counting from plateau - is less than <br/>the fluorescence in cycle C then the exponential phase starts at cycle c.]==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]\nB==>C[apply baseline]\nC==>D{compare Su and Sl <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}\nF== no ==>C\nD== Su > Sl ==>Esmaller[Define step: 0.005*baseline]\nD== Su < Sl ==>Ebigger[Decrease baseline by 0.01]\nEbigger==>F{baseline < min. observ}\nF== yes ==>G[baseline error]\nEsmaller==>H[Move to part II]\n\nstyle A fill:#77DFC9\nstyle B fill:#DEDBBA\nstyle C fill:#77DFC9\nstyle D fill:#DEDBBA\nstyle Ebigger fill:#77DFC9\nstyle Esmaller fill:#77DFC9\nstyle F fill:#DEDBBA\nstyle G fill:#77DFC9\nend\n\nsubgraph questions\nA2[What if there are no detectable jump?]==>B2[no questions]\nB2==>C2[no questions]\nC2==>D2[no questions]\nD2== Su > Sl ==>Esmaller2[no questions]\nD2== Su < Sl ==>Ebigger2[no questions]\nEbigger2==>F2[no questions]\nF2== no ==>C2\nF2== yes ==>G2[no questions]\n\nstyle A2 fill:#77DFC9\nstyle B2 fill:#DEDBBA\nstyle C2 fill:#77DFC9\nstyle D2 fill:#DEDBBA\nstyle Ebigger2 fill:#77DFC9\nstyle Esmaller2 fill:#77DFC9\nstyle F2 fill:#DEDBBA\nstyle G2 fill:#77DFC9\nend\n" 
+<p><div id="htmlwidget-38" style="width:672px;height:480px;" class="DiagrammeR"></div>
+<script type="application/json" data-for="htmlwidget-38">{ "x": {
+ "diagram": "\ngraph TB\nsubgraph linreg\nA[Determine start of the exponential phase <br/> The start of the exponential phase is defined by a jump: <br/> when fluorescence in cycle C+1 - counting from plateau - is less than <br/>the fluorescence in cycle C then the exponential phase starts at cycle c.]==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]\nB==>C[apply baseline]\nC==>D{compare S_U and S_L <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}\nF== no ==>C\nD== S_U > S_L ==>Esmaller[Define step: 0.005*baseline]\nD== S_U < S_L ==>Ebigger[Decrease baseline by 0.01]\nEbigger==>F{baseline < min. observ}\nF== yes ==>G[baseline error]\nEsmaller==>H[Move to part II]\n\nstyle A fill:#77DFC9\nstyle B fill:#DEDBBA\nstyle C fill:#77DFC9\nstyle D fill:#DEDBBA\nstyle Ebigger fill:#77DFC9\nstyle Esmaller fill:#77DFC9\nstyle F fill:#DEDBBA\nstyle G fill:#77DFC9\nend\n\nsubgraph questions\nA2[QI_1. What if there are no detectable jump?]==>B2[no questions]\nB2==>C2[no questions]\nC2==>D2[no questions]\nD2== S_U > S_L ==>Esmaller2[no questions]\nD2== S_U < S_L ==>Ebigger2[no questions]\nEbigger2==>F2[no questions]\nF2== no ==>C2\nF2== yes ==>G2[no questions]\n\nstyle A2 fill:#77DFC9\nstyle B2 fill:#DEDBBA\nstyle C2 fill:#77DFC9\nstyle D2 fill:#DEDBBA\nstyle Ebigger2 fill:#77DFC9\nstyle Esmaller2 fill:#77DFC9\nstyle F2 fill:#DEDBBA\nstyle G2 fill:#77DFC9\nend\n" 
 },"evals": [  ] }</script></p>
 </div>
 <div id="part-ii" class="section level3">
 <h3>Part II</h3>
-<p><div id="htmlwidget-4086" style="width:672px;height:480px;" class="DiagrammeR"></div>
-<script type="application/json" data-for="htmlwidget-4086">{ "x": {
- "diagram": "\ngraph TB\nsubgraph linreg\nA[BL = BL + step]==>B[apply baseline]\n\nB==>C{compare Su and Sl}\n\nDbigger[BL = BL - 2.step <br/> step = 0.5*step]==>B\n\nC==Su - Sl < 1e-05==>E[Baseline corrected sample]\n\nC== Su < Sl ==>Dbigger\n\nC== Su > Sl ==>A\n\nstyle A fill:#77DFC9\nstyle B fill:#DEDBBA\nstyle C fill:#77DFC9\nstyle Dbigger fill:#DEDBBA\nstyle E fill:#DEDBBA\nend\n\nsubgraph questions\nA2[II_1. what if step is negative? should it be added or substracted?]==>B2[no questions]\nB2==>C2[no questions]\nC2== Su < Sl ==>Dbigger2[II_2. what means 2.step?]\nDbigger2==>B2\nC2== Su - Sl < 1e-05 ==>E2[no questions]\nC2== Su > Sl ==>A2\n\nstyle A2 fill:#77DFC9\n  style B2 fill:#DEDBBA\n  style C2 fill:#77DFC9\n  style Dbigger2 fill:#DEDBBA\n  style E2 fill:#DEDBBA\n  end\n\n\n" 
+<p><div id="htmlwidget-9496" style="width:672px;height:480px;" class="DiagrammeR"></div>
+<script type="application/json" data-for="htmlwidget-9496">{ "x": {
+ "diagram": "\ngraph TB\nsubgraph linreg\nA[BL = BL + step]==>B[apply baseline]\nB==>C{compare S_U and S_L}\nDbigger[BL = BL - 2.step <br/> step = 0.5*step]==>B\nC==S_U - S_L < 1e-05==>E[Baseline corrected sample]\nC== S_U < S_L ==>Dbigger\nC== S_U > S_L ==>A\n\nstyle A fill:#77DFC9\nstyle B fill:#DEDBBA\nstyle C fill:#77DFC9\nstyle Dbigger fill:#DEDBBA\nstyle E fill:#DEDBBA\nend\n\nsubgraph questions\nA2[QII_1. what if step is negative? should it be added or substracted?]==>B2[no questions]\nB2==>C2[no questions]\nC2== S_U < S_L ==>Dbigger2[QII_2. what means 2.step?]\nDbigger2==>B2\nC2== S_U - S_L < 1e-05 ==>E2[no questions]\nC2== S_U > S_L ==>A2\n\nstyle A2 fill:#77DFC9\n  style B2 fill:#DEDBBA\n  style C2 fill:#77DFC9\n  style Dbigger2 fill:#DEDBBA\n  style E2 fill:#DEDBBA\n  end\n" 
 },"evals": [  ] }</script></p>
 </div>
 </div>
