@@ -1,7 +1,12 @@
 ---
-output: html_document
+title: "linreg algorithm"
+author: "Michal Burdukiewicz"
+date: "Tuesday, May 19, 2015"
+output:
+  html_document:
+    toc: yes
 ---
-# linreg algorithm - R implementation
+
 
 ## Rules
 
@@ -18,7 +23,8 @@ Only one question per line.
 
 ## Baselining
 
-### Part 0
+
+## Part 0
 
 ```{r,echo=FALSE}
 library(DiagrammeR)
@@ -42,9 +48,10 @@ end
 
 subgraph questions
 A2[no questions]==>B2[no questions]
-B2==>C2[Q0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
-C2==>D2[Q0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
-D2== yes ==>Eyes2[Q0_3. Which algorithm was used for numerical derivation?]
+B2==>C2[0_1. Linreg manual indicates that apply baseline means substract baseline. <br/> If the baseline is smaller than 0, should it be also substracted?]
+C2==>D2[0_2. If the minimum value is 0, should I add a small epsilon to fluoescence values?]
+D2== yes ==>Eyes2[0_3. Which algorithm was used for numerical derivation?]
+
 D2== no ==>Eno2[no questions]
 
 style A2 fill:#DCEBE3
@@ -59,7 +66,7 @@ end
 mermaid(diagram)
 ```
 
-### Part I
+## Part I
 
 ```{r,echo=FALSE}
 
@@ -87,7 +94,7 @@ style G fill:#77DFC9
 end
 
 subgraph questions
-A2[QI_1. What if there are no detectable jump?]==>B2[no questions]
+A2[I.01. What if there are no detectable jump? <br/> I.02. What do to in case of sample without visible plateau phase?]==>B2[no questions]
 B2==>C2[no questions]
 C2==>D2[no questions]
 D2== S_U > S_L ==>Esmaller2[no questions]
@@ -111,8 +118,7 @@ mermaid(diagram)
 ```
 
 
-
-### Part II
+## Part II
 
 ```{r,echo=FALSE}
 
@@ -151,3 +157,8 @@ style A2 fill:#77DFC9
 
 mermaid(diagram)
 ```
+
+
+# Additional questions
+
+"Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed." - how bug was corrected?
