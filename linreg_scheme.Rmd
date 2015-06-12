@@ -73,16 +73,18 @@ library(DiagrammeR)
 diagram <- "
 graph TB
 subgraph linreg
-A[raw sample]==>B[set baseline to <br/> minimum observation]
-B==>C[apply baseline]
+A[raw sample]==>B{set baseline to <br/> minimum observation}
+B== BL != 0 ==>C[substract baseline]
 C==>D{check for amplification <br/> Samples are skipped when less than seven times <br/> increase in fluorescence values is observed}
-D== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase]
+D== yes ==>Eyes[Determine SDM cycle: <br/> end of the exponential phase <br/> the approximate derivative is a difference of two values]
 D== no ==>Eno[skip sample]
 Eyes==>F[Move to Part I]
+B== BL != 0 ==>Cbis[if the observed minimum fluorescence is 0 <br/> and machine BL is constant, add any value. <br/> Get raw values in case of baseline trend]
 
 style A fill:#DCEBE3
 style B fill:#77DFC9
 style C fill:#DEDBBA
+style Cbis fill:#DEDBBA
 style D fill:#77DFC9
 style Eyes fill:#DEDBBA
 style Eno fill:#DEDBBA
@@ -90,9 +92,9 @@ end
 
 subgraph questions
 A2[no questions]==>B2[no questions]
-B2==>C2[apply baseline is ALWAYS substract baseline]
-C2==>D2[if the observed minimum fluorescence is 0, add any value, when baseline is constant. <br/> Get raw values in case of baseline trend]
-D2== yes ==>Eyes2[the approximate derivative is a difference of two values]
+B2==>C2[no questions]
+C2==>D2[no questions]
+D2== yes ==>Eyes2[no questions]
 
 D2== no ==>Eno2[no questions]
 
@@ -115,7 +117,7 @@ mermaid(diagram)
 diagram <- "
 graph TB
 subgraph linreg
-START[Move from part 0]==>A[Determine start of the exponential phase.]
+START[Move from part 0]==>A[Determine start of the exponential phase]
 A==>B[set baseline too high: <br/> baseline is the average of the 6th and the 7th point <br/> below the plateau phase]
 B==>C[apply baseline]
 C==>D{compare S_U and S_L <br/> When the exponential phase has an uneven number of points, <br/> the middle point is in the top as well as the bottom part}
