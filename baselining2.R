@@ -119,7 +119,8 @@ while(abs(sl["u"] -  sl["l"]) > 1e-5  && it < max.it) {
     
     it <- it + 1
     
-    print(fluo[1])
+
+    print(abs(sl["u"] -  sl["l"]))
 
   }
 }
