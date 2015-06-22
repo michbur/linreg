@@ -97,19 +97,29 @@ stp <- 0.05*bl
 bl <- bl + stp
 fluo <- fluo - bl
 
+max.it = 10
+
 it <- 0
-while(abs(sl["u"] -  sl["l"]) > 1e-5) {
+while(abs(sl["u"] -  sl["l"]) > 1e-5  && it < max.it) {
   if(sl["u"] < sl["l"]) {
     bl <- bl - 2*stp
     stp <- stp/2
+    
+    fluo <- fluo - bl
+    
     sl <- get_slopes(fluo)
+    
     it <- it + 1
-    print("A")
     
   } else {
     bl <- bl + stp
+    fluo <- fluo - bl
+    
     sl <- get_slopes(fluo)
+    
     it <- it + 1
-    print("B")
+    
+    print(fluo[1])
+
   }
 }
