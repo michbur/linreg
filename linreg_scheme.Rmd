@@ -23,36 +23,6 @@ source("extract_questions.R")
 
 ```
 
-## Answered
-
-Q0_1. Linreg manual indicates that apply baseline means substract baseline. If the baseline is smaller than 0, should it be also substracted?  
-Q0-1: apply baseline is indeed always subtract baseline. So when the baseline becomes negative you are in fact adding to the observed fluorescence values. 
-
-Q0_2. If the minimum value is 0, should I add a small epsilon to fluorescence values?  
-Q0-2: I think that you mean observed minimum fluorescence is 0. In that case the qPCR machine has done a baseline subtraction. When that is a constant baseline you can add any constant you want to keep all data in the analysis. When the machine does a baseline trend you have to go back to the machine and get the raw data.
-
-Q0_3. Which algorithm was used for numerical derivation?  
-Q0-3: I simply took the difference of two values or the difference of two of those difference. The purpose of the procedure is not to determine the exact SDM value, but only to identify the cycle that marks the start of the plateau.
-
-QI_1. How to define start of the exponential phase if there are no detectable jump?  
-Q1-1: the exponential phase starts after the ground phase noise. So there must always be a jump. I have seen dat from a qPCR machine that were not raw, but fitted to some kind of curve. In that case the noise is lost and thus the jump is lost and LinRegPCR fails.
-
-QI_2. How to set a baseline as the average of the 6th and the 7th point below the plateau phase when plateau phase is not visible?  
-Q1-2: When the plateau phase, as the phase after the SDM cycle, is not there, LinRegPCR flags the sample as 'no plateau' and does give a N0 value only when the PCR efficiency is not deviating from the other samples in which the same amplicon is amplified.
-
-QII_1. What if step is negative? should it be added or substracted?  
-Q2-1: See Q0-1: the step value is always subtracted: so when it becomes negative you are in fact adding something.
-
-QII_2. What means 2.step?  
-Q2-2: 2.step means 2 x step or in words: two times the step value. It is in the procedure to go 2 steps back when the shape of the curve chances fron convex to concave (or v.v.). This is to make sure that the first step/2 that is subtracted again does leave the procedure in the same 'shape'. 
-
-
-
-QADD1: From manual: "Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed." - how bug was corrected?
-
-A: "The correction in the code of LinRegPCR you refer to in the Additional Question was made in September 2011 and was required because of something that occurred in the datasets of the Methods paper (competimer set, samples G_D_1 and F_C_2). In those sets the maximum of the first derivative (FDM) was followed by a dip in the fluorescence values.  
-Why was that important in the code: the second derivative maximum (SDM) is always earlier than the FDM. So to save processing time, the search for the SDM was limited from the ‘jump’ as the last noisy cycle to the FDM+2. The plus 2 is to allow the first and second difference in fluorescence values to be calculated. However, in case of a ‘dip’ after FDM, this resulted an exponential phase of 2 points. So, the solution was to remove the +2 in case there was no continuous increase of 2 cycles after the FDM (less increase than before FDM but still increasing)."
-
 
 # List of abbrevations
 
@@ -206,3 +176,32 @@ style A2 fill:#77DFC9
 mermaid(diagram)
 ```
 
+## Answered
+
+Q0_1. Linreg manual indicates that apply baseline means substract baseline. If the baseline is smaller than 0, should it be also substracted?  
+Q0-1: apply baseline is indeed always subtract baseline. So when the baseline becomes negative you are in fact adding to the observed fluorescence values. 
+
+Q0_2. If the minimum value is 0, should I add a small epsilon to fluorescence values?  
+Q0-2: I think that you mean observed minimum fluorescence is 0. In that case the qPCR machine has done a baseline subtraction. When that is a constant baseline you can add any constant you want to keep all data in the analysis. When the machine does a baseline trend you have to go back to the machine and get the raw data.
+
+Q0_3. Which algorithm was used for numerical derivation?  
+Q0-3: I simply took the difference of two values or the difference of two of those difference. The purpose of the procedure is not to determine the exact SDM value, but only to identify the cycle that marks the start of the plateau.
+
+QI_1. How to define start of the exponential phase if there are no detectable jump?  
+Q1-1: the exponential phase starts after the ground phase noise. So there must always be a jump. I have seen dat from a qPCR machine that were not raw, but fitted to some kind of curve. In that case the noise is lost and thus the jump is lost and LinRegPCR fails.
+
+QI_2. How to set a baseline as the average of the 6th and the 7th point below the plateau phase when plateau phase is not visible?  
+Q1-2: When the plateau phase, as the phase after the SDM cycle, is not there, LinRegPCR flags the sample as 'no plateau' and does give a N0 value only when the PCR efficiency is not deviating from the other samples in which the same amplicon is amplified.
+
+QII_1. What if step is negative? should it be added or substracted?  
+Q2-1: See Q0-1: the step value is always subtracted: so when it becomes negative you are in fact adding something.
+
+QII_2. What means 2.step?  
+Q2-2: 2.step means 2 x step or in words: two times the step value. It is in the procedure to go 2 steps back when the shape of the curve chances fron convex to concave (or v.v.). This is to make sure that the first step/2 that is subtracted again does leave the procedure in the same 'shape'. 
+
+
+
+QADD1: From manual: "Corrected a bug that occurred when the plateau phase data were not fully continuously increasing. This then resulted in a two plateau phase points being selected and the sample being excluded. Note that this correction can lead to changed results when data are re-analysed." - how bug was corrected?
+
+A: "The correction in the code of LinRegPCR you refer to in the Additional Question was made in September 2011 and was required because of something that occurred in the datasets of the Methods paper (competimer set, samples G_D_1 and F_C_2). In those sets the maximum of the first derivative (FDM) was followed by a dip in the fluorescence values.  
+Why was that important in the code: the second derivative maximum (SDM) is always earlier than the FDM. So to save processing time, the search for the SDM was limited from the ‘jump’ as the last noisy cycle to the FDM+2. The plus 2 is to allow the first and second difference in fluorescence values to be calculated. However, in case of a ‘dip’ after FDM, this resulted an exponential phase of 2 points. So, the solution was to remove the +2 in case there was no continuous increase of 2 cycles after the FDM (less increase than before FDM but still increasing)."
