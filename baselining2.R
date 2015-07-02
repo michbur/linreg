@@ -99,8 +99,6 @@ baseline <- function(fluo, max_it = 100) {
   
   sl <- get_slopes(fluo)
   
-  max_it = 50
-  
   it <- 0
   
   sl2 <- matrix(sl, ncol = 2)
