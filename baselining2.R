@@ -49,7 +49,7 @@ library(qpcR)
 
 # baselining function --------------------------------------------
 
-baseline <- function(fluo, max_it = 50) {
+baseline <- function(fluo, max_it = 100) {
   
   #if sample is not amplified, end function
   is_amplified(fluo)
@@ -102,6 +102,8 @@ baseline <- function(fluo, max_it = 50) {
   max_it = 50
   
   it <- 0
+  
+  sl2 <- matrix(sl, ncol = 2)
   while(abs(sl["u"] -  sl["l"]) > 1e-5  && it < max_it) {
     if(sl["u"] < sl["l"]) {
       bl <- bl - 2*stp
@@ -111,6 +113,8 @@ baseline <- function(fluo, max_it = 50) {
       
       sl <- get_slopes(fluo)
       
+      sl2 <- rbind(sl2, sl)
+      
       it <- it + 1
       
     } else {
@@ -119,13 +123,15 @@ baseline <- function(fluo, max_it = 50) {
       
       sl <- get_slopes(fluo)
       
+      sl2 <- rbind(sl2, sl)
+      
       it <- it + 1
     }
-    
+  }
 
   
-  bl
+  list(bl, sl2)
 }
 
 
-baseline(rutledge[, 2])
+tmp <- baseline(rutledge[, 4])
