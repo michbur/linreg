@@ -1,11 +1,12 @@
 is_amplified <- function(fluo) {
-  max(fluo)/min(fluo) > 7
+  abs(max(fluo)/min(fluo)) > 7
 }
 
 simple_derivation <- function(y)
   c(NA, sapply(2L:length(y), function(i) y[i] - y[i - 1]))
 
-get_jump <- function(y)
+get_jump <- fun
+ction(y)
   simple_derivation(y) < 0
 
 #get exponential phase indices
@@ -13,7 +14,7 @@ get_exp <- function(y) {
   #exponential phase ends with SDM
   SDM_id <- which.max(simple_derivation(simple_derivation(y)))
   #exponential phase starts which a jump
-  jump_id <- SDM_id - which.max(simple_derivation(y[1L:SDM_id]) < 0)
+  jump_id <- SDM_id - which.max(rev(simple_derivation(y[1L:SDM_id]) < 0)) + 1
   c(start = jump_id + 1, end = SDM_id)
 }
 
@@ -41,7 +42,8 @@ get_slopes <- function(y) {
     exppu <- expp[(lexpp/2):lexpp]
   }
   
-  c(l = get_slope(abs(exppl)), u = get_slope(abs(exppu)))
+  list(l = get_slope(exppl), u = get_slope(exppu),
+       exppl = exppl, exppu = exppu)
 }
 
 
@@ -49,35 +51,36 @@ library(qpcR)
 
 # baselining function --------------------------------------------
 
-baseline <- function(fluo, max_it = 100) {
-  
-  #if sample is not amplified, end function
-  is_amplified(fluo)
-  
+baseline <- function(fluo, max_it = 500) {
   
   #preserve raw input
   raw_fluo <- fluo
   
+  
   bl <- min(fluo)
   fluo <- fluo - bl
+  
   #if min(data) is 0, we need to add small epsilon, because linreg 
   #often uses proportion of minimum and maximum value
   if(bl == 0) {
     fluo <- fluo + 0.001*max(fluo)
-    bl <- min(fluo)
   }
   
+  #if sample is not amplified, end function
+  is_amplified(fluo)
   
   #Part 1 ---------------------------
   
   
   #new baseline: mean of 6th and 7th point before the plateau phase
-  bl <- mean(fluo[(which.min(simple_derivation(simple_derivation(fluo)))-2:1)])
-  fluo <- fluo - bl
+  
+  bl <- mean(fluo[(which.min(simple_derivation(simple_derivation(fluo)))-9:10)])
+  fluo <- raw_fluo - bl
   sl <- get_slopes(fluo)
   
   it <- 0
-  while(sl["u"] <  sl["l"]  && it < max_it) {
+  
+  while(sl[["u"]] <  sl[["l"]]  && it < max_it) {
     bl <- bl * 0.99
     
     #add here if statement
@@ -101,17 +104,14 @@ baseline <- function(fluo, max_it = 100) {
   
   it <- 0
   
-  sl2 <- matrix(sl, ncol = 2)
-  while(abs(sl["u"] -  sl["l"]) > 1e-5  && it < max_it) {
-    if(sl["u"] < sl["l"]) {
+  while(abs(sl[["u"]] -  sl[["l"]]) > 1e-5  && it < max_it) {
+    if(sl[["u"]] < sl[["l"]]) {
       bl <- bl - 2*stp
       stp <- stp/2
       
       fluo <- fluo - bl
       
       sl <- get_slopes(fluo)
-      
-      sl2 <- rbind(sl2, sl)
       
       it <- it + 1
       
@@ -128,8 +128,8 @@ baseline <- function(fluo, max_it = 100) {
   }
 
   
-  list(bl, sl2)
+  list(bl)
 }
 
 
-tmp <- baseline(rutledge[, 4])
+tmp <- baseline(rutledge[, 2])
