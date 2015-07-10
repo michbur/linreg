@@ -5,8 +5,7 @@ is_amplified <- function(fluo) {
 simple_derivation <- function(y)
   c(NA, sapply(2L:length(y), function(i) y[i] - y[i - 1]))
 
-get_jump <- fun
-ction(y)
+get_jump <- function(y)
   simple_derivation(y) < 0
 
 #get exponential phase indices
@@ -46,9 +45,6 @@ get_slopes <- function(y) {
        exppl = exppl, exppu = exppu)
 }
 
-
-library(qpcR)
-
 # baselining function --------------------------------------------
 
 baseline <- function(fluo, max_it = 500) {
@@ -74,7 +70,7 @@ baseline <- function(fluo, max_it = 500) {
   
   #new baseline: mean of 6th and 7th point before the plateau phase
   
-  bl <- mean(fluo[(which.min(simple_derivation(simple_derivation(fluo)))-9:10)])
+  bl <- mean(fluo[(which.min(simple_derivation(simple_derivation(fluo)))-7:8)])
   fluo <- raw_fluo - bl
   sl <- get_slopes(fluo)
   
@@ -93,6 +89,8 @@ baseline <- function(fluo, max_it = 500) {
     it <- it + 1
   }
   
+  print(it)
+  
   stp <- 0.005*bl 
   
   # Part 2 ---------------------------------
@@ -100,7 +98,11 @@ baseline <- function(fluo, max_it = 500) {
   bl <- bl + stp
   fluo <- fluo - bl
   
+  browser()
+  
   sl <- get_slopes(fluo)
+  
+  sl_res <- matrix(c(sl[["u"]], sl[["l"]]), ncol = 2)
   
   it <- 0
   
@@ -121,15 +123,17 @@ baseline <- function(fluo, max_it = 500) {
       
       sl <- get_slopes(fluo)
       
-      sl2 <- rbind(sl2, sl)
+      sl_res <- rbind(sl_res, matrix(c(sl[["u"]], sl[["l"]]), ncol = 2))
       
       it <- it + 1
     }
   }
 
+  print(it)
   
-  list(bl)
+  list(bl,
+       sl_res)
 }
 
 
-tmp <- baseline(rutledge[, 2])
+tmp <- baseline(C126EG685[, 3])
